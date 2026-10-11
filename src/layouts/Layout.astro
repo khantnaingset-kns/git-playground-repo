@@ -1,0 +1,85 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const {
+	title = 'FlameOps — Train the engineers who run production',
+	description = 'FlameOps is a technical academy for cloud native infrastructure. Documentation-first courses, real clusters, and the operational judgment that only comes from doing.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<title>{title}</title>
+
+		<link
+			rel="icon"
+			type="image/svg+xml"
+			href="/favicon.svg"
+			media="(prefers-color-scheme: light)"
+		/>
+		<link
+			rel="icon"
+			type="image/svg+xml"
+			href="/favicon-dark.svg"
+			media="(prefers-color-scheme: dark)"
+		/>
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+		<link rel="icon" href="/favicon.ico" sizes="any" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Geist:wght@400;500;600&display=swap"
+			rel="stylesheet"
+		/>
+
+		{/* Set the saved theme before first paint to avoid a flash of the wrong colors. */}
+		<script is:inline>
+			(function () {
+				try {
+					var t = localStorage.getItem('flameops-theme') || 'light';
+					document.documentElement.setAttribute('data-theme', t);
+				} catch (e) {}
+			})();
+		</script>
+	</head>
+	<body>
+		<slot />
+
+		{/* Theme toggle — wired to any button with id="theme-toggle" on the page. */}
+		<script is:inline>
+			(function () {
+				var btn = document.getElementById('theme-toggle');
+				if (!btn) return;
+				function icon() {
+					return document.documentElement.getAttribute('data-theme') === 'dark'
+						? '◑'
+						: '◐';
+				}
+				btn.textContent = icon();
+				btn.addEventListener('click', function () {
+					var cur =
+						document.documentElement.getAttribute('data-theme') || 'light';
+					var next = cur === 'light' ? 'dark' : 'light';
+					try {
+						localStorage.setItem('flameops-theme', next);
+					} catch (e) {}
+					document.documentElement.setAttribute('data-theme', next);
+					btn.textContent = icon();
+				});
+			})();
+		</script>
+	</body>
+</html>

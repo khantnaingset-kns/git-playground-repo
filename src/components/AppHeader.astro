@@ -1,0 +1,50 @@
+---
+import Logo from './Logo.astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Crumb {
+	label: string;
+	href?: string;
+}
+
+interface Props {
+	crumbs: Crumb[];
+}
+
+const { crumbs } = Astro.props;
+---
+
+<header class="sticky top-0 z-50 border-b border-border bg-bg">
+	<div class="flex h-[60px] items-center justify-between px-6">
+		<div class="flex min-w-0 items-center gap-3 md:gap-4">
+			<Logo href="/" size={26} mdSize={32} wordSize={16} mdWordSize={18} />
+			<nav class="hidden min-w-0 items-center gap-3 md:flex md:gap-4">
+				{
+					crumbs.map((c) => (
+						<>
+							<span class="text-border">/</span>
+							{c.href ? (
+								<a
+									href={c.href}
+									class="whitespace-nowrap text-[13px] text-muted transition-colors hover:text-text"
+								>
+									{c.label}
+								</a>
+							) : (
+								<span class="truncate text-[13px] font-medium">{c.label}</span>
+							)}
+						</>
+					))
+				}
+			</nav>
+		</div>
+		<div class="flex items-center gap-4">
+			<ThemeToggle size={30} />
+			<div
+				class="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-accent font-mono text-xs font-semibold text-white"
+			>
+				AV
+			</div>
+		</div>
+	</div>
+</header>

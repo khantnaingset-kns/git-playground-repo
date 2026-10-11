@@ -1,0 +1,49 @@
+---
+const reasons = [
+	{
+		num: '/01',
+		title: 'Documentation-first',
+		desc: 'Every lesson is a readable, searchable reference you will return to long after the course ends.',
+	},
+	{
+		num: '/02',
+		title: 'Real infrastructure',
+		desc: 'Labs run on real clusters and real cloud accounts — not sandboxed simulations.',
+	},
+	{
+		num: '/03',
+		title: 'Senior-level depth',
+		desc: 'Material written for working engineers. No filler, no clickbait, no certification theater.',
+	},
+	{
+		num: '/04',
+		title: 'Everything linked',
+		desc: 'Recordings, notes, gists, reading lists, and setup guides — organized in one place per lesson.',
+	},
+];
+---
+
+<!-- Why FlameOps -->
+<section id="why" class="border-b border-border">
+	<div class="mx-auto grid max-w-site grid-cols-1 gap-6 px-5 py-10 md:grid-cols-[0.9fr_1.1fr] md:gap-14 md:px-8 md:py-14">
+		<div>
+			<div class="mb-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-muted md:text-xs">03 / Why FlameOps</div>
+			<h2 class="m-0 font-display text-[26px] font-semibold leading-[1.2] tracking-[-0.01em] md:text-[36px]">
+				Built like documentation, taught like apprenticeship
+			</h2>
+		</div>
+		<div class="flex flex-col">
+			{
+				reasons.map((r) => (
+					<div class="grid grid-cols-[44px_1fr] gap-4 border-b border-border py-5 md:grid-cols-[64px_1fr] md:gap-5 md:py-6">
+						<div class="pt-0.5 font-mono text-[13px] text-accent md:text-sm">{r.num}</div>
+						<div>
+							<div class="mb-1.5 text-base font-semibold md:text-lg">{r.title}</div>
+							<div class="text-sm leading-[1.55] text-muted md:text-base">{r.desc}</div>
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</section>

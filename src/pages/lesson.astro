@@ -1,0 +1,247 @@
+---
+import { Code } from 'astro:components';
+import Layout from '../layouts/Layout.astro';
+import AppHeader from '../components/AppHeader.astro';
+import CourseSidebar from '../components/CourseSidebar.astro';
+import PrevNextNav from '../components/PrevNextNav.astro';
+import { modules, courseMeta } from '../data/course';
+
+const checklist = [
+	{ label: 'Cluster from module 01 running', cmd: 'kubectl get nodes', done: true },
+	{ label: 'Install the Gateway API CRDs', cmd: 'kubectl apply -f gateway-crds.yaml', done: true },
+	{ label: 'Deploy the shared Gateway', cmd: 'kubectl apply -f gateway.yaml', done: false },
+	{ label: 'Verify routes resolve', cmd: 'curl -H "Host: app.flameops.dev" $LB_IP', done: false },
+];
+
+const readings = [
+	{ title: 'Gateway API — official introduction', meta: 'gateway-api.sigs.k8s.io', time: '15 min' },
+	{ title: 'Ingress controllers: a comparison that isn’t marketing', meta: 'learnk8s.io', time: '25 min' },
+	{ title: 'Migrating from Ingress to Gateway API at scale', meta: 'engineering blog · case study', time: '20 min' },
+];
+
+const books = [
+	{ abbr: 'PK', title: 'Production Kubernetes', author: 'Rosso, Lander, Brand, Harris — O’Reilly', why: 'Chapter 6 covers ingress architecture decisions in depth. Read before the module 03 lab.' },
+	{ abbr: 'NET', title: 'Networking and Kubernetes', author: 'Strebel & Boten — O’Reilly', why: 'The best grounding on kube-proxy, CNI, and where packets actually go.' },
+];
+
+const routeYaml = `apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: web-app
+spec:
+  parentRefs:
+    - name: shared-gateway
+  hostnames: ["app.flameops.dev"]
+  rules:
+    - backendRefs:
+        - name: web-app
+          port: 8080`;
+
+const flameOpsCodeTheme = {
+	name: 'flameops',
+	type: 'dark' as const,
+	colors: {
+		'editor.foreground': 'var(--code-text)',
+		'editor.background': 'var(--code-bg)',
+	},
+	tokenColors: [
+		{
+			scope: ['comment'],
+			settings: { foreground: 'var(--code-muted)' },
+		},
+		{
+			scope: ['entity.name.tag.yaml', 'punctuation.separator.key-value'],
+			settings: { foreground: 'var(--code-muted)' },
+		},
+		{
+			scope: ['string', 'string.unquoted.plain.out.yaml'],
+			settings: { foreground: 'var(--accent)' },
+		},
+		{
+			scope: ['constant.numeric', 'constant.language'],
+			settings: { foreground: 'var(--code-accent)' },
+		},
+	],
+};
+---
+
+<Layout title="Ingress & the Gateway API — FlameOps">
+	<div class="flex min-h-screen flex-col bg-bg text-text">
+		<AppHeader
+			crumbs={[
+				{ label: 'Courses', href: '/courses' },
+				{ label: courseMeta.title, href: '/course' },
+				{ label: '3.2 Ingress & the Gateway API' },
+			]}
+		/>
+
+		<div class="flex min-h-0 flex-1">
+			<CourseSidebar modules={modules}>
+				<a href="/course" class="font-mono text-[11px] uppercase tracking-[0.12em] text-muted transition-colors hover:text-text">← Course overview</a>
+				<div class="mt-2.5 font-display text-base font-semibold leading-[1.3]">{courseMeta.title}</div>
+				<div class="mt-3.5">
+					<div class="mb-1.5 flex justify-between font-mono text-[11px] text-muted">
+						<span>Progress</span><span>{courseMeta.progressText}</span>
+					</div>
+					<div class="h-1 overflow-hidden rounded-sm bg-border">
+						<div class="h-full bg-accent" style={`width:${courseMeta.progressPct}%`}></div>
+					</div>
+				</div>
+			</CourseSidebar>
+
+			<main class="min-w-0 flex-1">
+				<div class="mx-auto max-w-[780px] px-6 pt-14 pb-20 md:px-12">
+					<div class="mb-3.5 flex items-center gap-3">
+						<span class="font-mono text-[11px] uppercase tracking-[0.14em] text-accent">Module 03 · Lesson 3.2</span>
+						<span class="font-mono text-[11px] text-muted">~50 min</span>
+					</div>
+					<h1 class="m-0 mb-3.5 font-display text-[36px] font-semibold leading-[1.12] tracking-[-0.02em]">Ingress Controllers & the Gateway API</h1>
+					<p class="m-0 mb-9 text-base leading-[1.65] text-muted">
+						How traffic actually enters a cluster: ingress controllers compared, why
+						the Gateway API exists, and how to migrate without downtime. Recording,
+						notes, and lab manifests below.
+					</p>
+
+					<!-- Video card -->
+					<a href="#" class="mb-10 flex items-center gap-5 rounded-card border border-border bg-surface px-6 py-5 text-text shadow-card transition-colors hover:border-accent">
+						<span class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg bg-code-bg text-lg text-accent">▶</span>
+						<span class="flex-1">
+							<span class="mb-1 block text-[15px] font-semibold">Session recording — Ingress & Gateway API</span>
+							<span class="block text-[13px] text-muted">Recorded Jun 24 · 1h 12m · includes live migration demo</span>
+						</span>
+						<span class="font-mono text-xs text-accent">Watch →</span>
+					</a>
+
+					<!-- Notes -->
+					<h2 class="m-0 mb-4 font-display text-[22px] font-semibold tracking-[-0.01em]">Class notes</h2>
+					<p class="m-0 mb-4 text-[15px] leading-[1.7]">
+						An Ingress resource is only a declaration — nothing routes until an
+						<strong>ingress controller</strong> watches it and programs a data plane.
+						The controller is just another workload in your cluster, which means it has
+						versions, resource limits, and failure modes you own.
+					</p>
+					<p class="m-0 mb-6 text-[15px] leading-[1.7]">
+						The <a href="#" class="text-accent hover:text-accent-2">Gateway API</a> replaces the single overloaded Ingress
+						resource with role-oriented resources:
+						<code class="rounded bg-accent/[0.08] px-1.5 py-0.5 font-mono text-[13px] text-accent-2">GatewayClass</code> for infra providers,
+						<code class="rounded bg-accent/[0.08] px-1.5 py-0.5 font-mono text-[13px] text-accent-2">Gateway</code> for cluster operators, and
+						<code class="rounded bg-accent/[0.08] px-1.5 py-0.5 font-mono text-[13px] text-accent-2">HTTPRoute</code> for app teams.
+					</p>
+
+					<!-- Callout -->
+					<div class="mb-10 flex gap-3.5 rounded-lg border border-border border-l-[3px] border-l-accent bg-surface px-5 py-4">
+						<span class="font-mono text-[13px] text-accent">!</span>
+						<div class="text-sm leading-[1.6] text-muted">
+							<strong class="text-text">Production note:</strong> annotations on Ingress resources are
+							controller-specific. If your manifests are full of
+							<span class="font-mono text-xs">nginx.ingress.kubernetes.io/*</span>, you are locked in more than you think.
+						</div>
+					</div>
+
+					<!-- Code block -->
+					<h2 class="m-0 mb-4 font-display text-[22px] font-semibold tracking-[-0.01em]">Example: HTTPRoute</h2>
+					<div class="mb-4 overflow-hidden rounded-card border border-border shadow-card">
+						<div class="flex items-center justify-between border-b border-white/[0.08] bg-code-bg px-4 py-2.5">
+							<span class="font-mono text-[11px] tracking-[0.08em] text-code-muted">httproute.yaml</span>
+							<button
+								id="copy-route"
+								type="button"
+								data-code={routeYaml}
+								class="cursor-pointer rounded-md border border-white/15 px-2.5 py-1 font-mono text-[11px] text-code-muted transition-colors hover:border-white/40 hover:text-code-text"
+							>copy</button>
+						</div>
+						<Code
+							code={routeYaml}
+							lang="yaml"
+							theme={flameOpsCodeTheme}
+							class="m-0 overflow-x-auto p-5 font-mono text-[13px] leading-[1.7]"
+						/>
+					</div>
+					<div class="mb-10">
+						<a href="#" class="font-mono text-xs text-accent hover:text-accent-2">View full gist on GitHub ↗</a>
+					</div>
+
+					<!-- Setup checklist -->
+					<h2 class="m-0 mb-4 font-display text-[22px] font-semibold tracking-[-0.01em]">Lab setup checklist</h2>
+					<div class="mb-10 overflow-hidden rounded-card border border-border bg-surface shadow-card">
+						{
+							checklist.map((c) => (
+								<div class="flex items-center gap-3.5 border-b border-border px-5 py-3 text-sm last:border-b-0">
+									<span
+										aria-hidden="true"
+										class:list={[
+											'flex h-[18px] w-[18px] flex-shrink-0 items-center justify-center rounded border-[1.5px] text-[11px] text-white',
+											c.done ? 'border-accent bg-accent' : 'border-border',
+										]}
+									>
+										{c.done ? '✓' : ''}
+									</span>
+									<span class={c.done ? 'text-muted' : 'text-text'}>
+										<span class="sr-only">{c.done ? 'Complete: ' : 'Incomplete: '}</span>{c.label}
+									</span>
+									<code class="ml-auto font-mono text-xs text-muted">{c.cmd}</code>
+								</div>
+							))
+						}
+					</div>
+
+					<!-- Reading -->
+					<h2 class="m-0 mb-4 font-display text-[22px] font-semibold tracking-[-0.01em]">Recommended reading</h2>
+					<div class="mb-10 flex flex-col gap-3">
+						{
+							readings.map((r) => (
+								<a href="#" class="flex items-start gap-3.5 rounded-card border border-border bg-surface px-5 py-4 text-text shadow-card transition-colors hover:border-accent">
+									<span class="pt-0.5 font-mono text-xs text-accent">↗</span>
+									<span class="flex-1">
+										<span class="mb-0.5 block text-sm font-medium">{r.title}</span>
+										<span class="block text-xs text-muted">{r.meta}</span>
+									</span>
+									<span class="font-mono text-[11px] whitespace-nowrap text-muted">{r.time}</span>
+								</a>
+							))
+						}
+					</div>
+
+					<!-- Books -->
+					<h2 class="m-0 mb-4 font-display text-[22px] font-semibold tracking-[-0.01em]">Books</h2>
+					<div class="mb-12 grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+						{
+							books.map((b) => (
+								<div class="flex gap-4 rounded-card border border-border bg-surface px-5 py-[18px] shadow-card">
+									<span class="flex h-[62px] w-11 flex-shrink-0 items-center justify-center rounded border border-border bg-code-bg text-center font-mono text-[10px] leading-[1.3] text-accent">{b.abbr}</span>
+									<span>
+										<span class="mb-0.5 block text-sm font-semibold">{b.title}</span>
+										<span class="mb-1.5 block text-xs text-muted">{b.author}</span>
+										<span class="block text-xs leading-[1.5] text-muted">{b.why}</span>
+									</span>
+								</div>
+							))
+						}
+					</div>
+
+					<PrevNextNav
+						previous={{ label: '← Previous', title: '3.1 Services & kube-proxy', href: '/course' }}
+						next={{ label: 'Next →', title: '3.3 Network policies', href: '/course' }}
+					/>
+				</div>
+			</main>
+		</div>
+	</div>
+</Layout>
+
+<script is:inline>
+	(function () {
+		var btn = document.getElementById('copy-route');
+		if (!btn) return;
+		btn.addEventListener('click', async function () {
+			try {
+				await navigator.clipboard.writeText(btn.getAttribute('data-code') || '');
+			} catch (e) {}
+			var prev = btn.textContent;
+			btn.textContent = 'copied ✓';
+			setTimeout(function () {
+				btn.textContent = prev;
+			}, 1600);
+		});
+	})();
+</script>

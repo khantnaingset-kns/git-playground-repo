@@ -1,0 +1,143 @@
+@import 'tailwindcss';
+
+/* Drive `dark:` utilities from our `data-theme` attribute instead of the OS setting. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* Theme palette — swapped by the `data-theme` attribute on <html>. */
+:root {
+	--bg: #faf9f6;
+	--surface: #ffffff;
+	--text: #16130f;
+	--muted: #6e675f;
+	--border: #e6e1d9;
+	--accent: #ea580c;
+	--accent-2: #c2410c;
+	--accent-strong: #c2410c;
+	--code-bg: #16130f;
+	--code-text: #ede7de;
+	--code-muted: #8a8378;
+	--code-accent: #f8b03a;
+	--on-dark: #f1ede7;
+	--on-dark-accent: #f97316;
+	--level-foundation: #8a8378;
+	--level-intermediate: #ea580c;
+	--level-advanced: #c2410c;
+	--nav-text: #16130f;
+}
+
+:root[data-theme='dark'] {
+	--bg: #131110;
+	--surface: #1b1815;
+	--text: #f1ede7;
+	--muted: #9a9188;
+	--border: #2b2721;
+	--accent: #f97316;
+	--accent-2: #fdba74;
+	--accent-strong: #c2410c;
+	--code-bg: #0d0b09;
+	--code-text: #ede7de;
+	--code-muted: #9a9188;
+	--code-accent: #f8b03a;
+	--on-dark: #f1ede7;
+	--on-dark-accent: #f97316;
+	--level-foundation: #9a9188;
+	--level-intermediate: #f97316;
+	--level-advanced: #fdba74;
+	--nav-text: #ffffff;
+}
+
+/* Expose the palette + fonts as Tailwind utilities.
+   `inline` keeps the utilities pointing at the live CSS vars so they re-theme. */
+@theme inline {
+	--color-bg: var(--bg);
+	--color-surface: var(--surface);
+	--color-text: var(--text);
+	--color-muted: var(--muted);
+	--color-border: var(--border);
+	--color-accent: var(--accent);
+	--color-accent-2: var(--accent-2);
+	--color-accent-strong: var(--accent-strong);
+	--color-code-bg: var(--code-bg);
+	--color-code-text: var(--code-text);
+	--color-code-muted: var(--code-muted);
+	--color-code-accent: var(--code-accent);
+	--color-on-dark: var(--on-dark);
+	--color-on-dark-accent: var(--on-dark-accent);
+	--color-level-foundation: var(--level-foundation);
+	--color-level-intermediate: var(--level-intermediate);
+	--color-level-advanced: var(--level-advanced);
+	--color-nav-text: var(--nav-text);
+}
+
+@theme {
+	--font-sans: 'Geist', system-ui, sans-serif;
+	--font-display: 'Space Grotesk', sans-serif;
+	--font-mono: 'JetBrains Mono', monospace;
+	--radius-card: 0.625rem;
+	--container-site: 75rem;
+
+	--shadow-card:
+		0 1px 2px rgba(22, 19, 15, 0.04), 0 3px 8px rgba(22, 19, 15, 0.05);
+}
+
+@layer base {
+	html {
+		-webkit-font-smoothing: antialiased;
+		/* Keep anchored sections clear of the sticky header. */
+		scroll-padding-top: 64px;
+	}
+
+	@media (min-width: 768px) {
+		html {
+			scroll-padding-top: 80px;
+		}
+	}
+
+	/* Animate in-page anchor jumps, but respect reduced-motion preferences. */
+	@media (prefers-reduced-motion: no-preference) {
+		html {
+			scroll-behavior: smooth;
+		}
+	}
+
+	body {
+		margin: 0;
+		background: var(--bg);
+		color: var(--text);
+		font-family: var(--font-sans);
+	}
+
+	::selection {
+		background: color-mix(in srgb, var(--accent) 25%, transparent);
+	}
+
+	@keyframes fo-blink {
+		0%,
+		60% {
+			opacity: 1;
+		}
+		61%,
+		100% {
+			opacity: 0;
+		}
+	}
+}
+
+@layer components {
+	.btn-primary {
+		@apply inline-flex items-center gap-2 rounded-md bg-accent px-6 py-3 text-[15px] font-medium text-white transition-colors hover:bg-accent-2 hover:text-white dark:hover:bg-accent-strong md:px-7 md:py-3.5 md:text-base;
+	}
+
+	.btn-secondary {
+		@apply inline-flex items-center rounded-md border border-border px-6 py-3 text-[15px] font-medium text-text transition-colors hover:border-text md:px-7 md:py-3.5 md:text-base;
+	}
+
+	.btn-ghost-light {
+		@apply inline-flex items-center rounded-md border border-white/20 px-6 py-3 text-[15px] font-medium text-on-dark transition-colors hover:border-on-dark md:px-7 md:py-3.5 md:text-base;
+	}
+
+	.terminal-cursor {
+		@apply inline-block h-[15px] w-2 bg-accent align-text-bottom;
+		animation: fo-blink 1s steps(1) infinite;
+	}
+}

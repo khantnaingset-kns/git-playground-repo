@@ -1,0 +1,25 @@
+---
+import CourseCard from '../CourseCard.astro';
+import { courses } from '../../data/courses';
+---
+
+<!-- Courses -->
+<section id="courses" class="border-b border-border">
+	<div class="mx-auto max-w-site px-5 py-10 md:px-8 md:py-14">
+		<div class="mb-7 md:mb-10">
+			<div class="mb-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-muted md:text-xs">01 / Courses</div>
+			<h2 class="m-0 mb-3 font-display text-[26px] font-semibold tracking-[-0.01em] md:text-[36px]">Structured paths, not playlists</h2>
+			<p class="m-0 max-w-[620px] text-[15px] leading-[1.6] text-muted md:text-[17px]">
+				Six tracks covering the modern infrastructure stack. Each course is a
+				documentation-first path with recordings, notes, and labs.
+			</p>
+		</div>
+		<div class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
+			{
+				courses.map((c) => (
+					<CourseCard course={c} href="/courses" variant="home" />
+				))
+			}
+		</div>
+	</div>
+</section>

@@ -1,0 +1,38 @@
+---
+const services = [
+	{
+		glyph: '>_',
+		title: 'Corporate training',
+		desc: 'Private cohorts for infrastructure teams, tailored to your stack and delivered on your schedule.',
+	},
+	{
+		glyph: '{}',
+		title: 'Platform consulting',
+		desc: 'Hands-on help designing internal developer platforms, Kubernetes estates, and delivery pipelines.',
+	},
+	{
+		glyph: '::',
+		title: 'Mentorship',
+		desc: 'One-to-one guidance for engineers moving into senior DevOps, SRE, and platform roles.',
+	},
+];
+---
+
+<!-- Services -->
+<section id="services" class="border-b border-border">
+	<div class="mx-auto max-w-site px-5 py-10 md:px-8 md:py-14">
+		<div class="mb-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-muted md:text-xs">02 / Services</div>
+		<h2 class="m-0 mb-7 font-display text-[26px] font-semibold tracking-[-0.01em] md:mb-10 md:text-[36px]">Beyond the classroom</h2>
+		<div class="grid grid-cols-1 overflow-hidden rounded-card border border-border shadow-card md:grid-cols-3">
+			{
+				services.map((s) => (
+					<div class="flex flex-col gap-3 border-b border-border bg-surface px-5 py-6 last:border-b-0 md:gap-4 md:border-b-0 md:border-r md:px-9 md:py-10 md:last:border-r-0">
+						<div class="font-mono text-[13px] text-accent md:text-[15px]">{s.glyph}</div>
+						<div class="font-display text-lg font-semibold md:text-[22px]">{s.title}</div>
+						<div class="text-sm leading-[1.55] text-muted md:text-base">{s.desc}</div>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</section>

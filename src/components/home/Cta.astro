@@ -1,0 +1,20 @@
+---
+const coursesHref = '/courses';
+const loginHref = '/login';
+---
+
+<!-- Final CTA -->
+<section class="border-b border-border bg-code-bg">
+	<div class="mx-auto flex max-w-site flex-col items-center gap-4 px-5 py-12 text-center md:px-8 md:py-16">
+		<div class="font-mono text-[11px] uppercase tracking-[0.16em] text-on-dark-accent md:text-xs">Ready when you are</div>
+		<h2 class="m-0 max-w-[760px] font-display text-[28px] font-semibold leading-[1.1] tracking-[-0.02em] text-on-dark md:text-[48px]">
+			Start running production like you mean it.
+		</h2>
+		<div class="mt-2.5 flex flex-wrap justify-center gap-3.5">
+			<a href={coursesHref} class="btn-primary">
+				Browse courses <span class="font-mono">→</span>
+			</a>
+			<a href={loginHref} class="btn-ghost-light">Log in</a>
+		</div>
+	</div>
+</section>

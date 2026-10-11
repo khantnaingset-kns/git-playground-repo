@@ -1,0 +1,117 @@
+---
+// Animated terminal window used in the hero.
+// Command lines type char-by-char; output lines appear at once; the whole
+// session loops. Honors prefers-reduced-motion by rendering the full session.
+---
+
+<div
+	class="w-full overflow-hidden rounded-card border border-border bg-code-bg text-left shadow-card"
+>
+	<div
+		class="flex items-center justify-between border-b border-white/[0.08] px-4 py-3"
+	>
+		<span class="font-mono text-[11px] tracking-[0.1em] text-code-muted">flameops — session</span>
+		<span class="flex gap-1.5">
+			<span class="block h-[9px] w-[9px] rounded-full bg-white/15"></span>
+			<span class="block h-[9px] w-[9px] rounded-full bg-white/15"></span>
+			<span class="block h-[9px] w-[9px] rounded-full bg-accent"></span>
+		</span>
+	</div>
+	<div class="min-h-[210px] p-4 md:min-h-[270px] md:p-6">
+		<pre
+			id="fo-terminal"
+			class="m-0 overflow-x-auto whitespace-pre-wrap font-mono text-xs leading-[1.75] text-code-text md:text-[15px]"></pre>
+	</div>
+</div>
+
+<script>
+	type Tone = 'text-code-muted' | 'text-code-accent' | null;
+	type Seg = [string, Tone];
+	interface Line {
+		typed: boolean;
+		pauseAfter: number;
+		segs: Seg[];
+	}
+
+	const lines: Line[] = [
+		{ typed: true, pauseAfter: 500, segs: [['$ ', 'text-code-muted'], ['flameops enroll --track platform-eng', null]] },
+		{ typed: false, pauseAfter: 220, segs: [['✓ ', 'text-code-accent'], ['Kubernetes for Platform Engineers', null]] },
+		{ typed: false, pauseAfter: 600, segs: [['✓ ', 'text-code-accent'], ['6 modules · 42 lessons · live labs', null]] },
+		{ typed: true, pauseAfter: 500, segs: [['$ ', 'text-code-muted'], ['kubectl get nodes', null]] },
+		{ typed: false, pauseAfter: 120, segs: [['NAME        STATUS   ROLES    AGE', 'text-code-muted']] },
+		{ typed: false, pauseAfter: 120, segs: [['lab-cp-01   Ready    control  12d', null]] },
+		{ typed: false, pauseAfter: 120, segs: [['lab-w-01    Ready    worker   12d', null]] },
+		{ typed: false, pauseAfter: 3200, segs: [['lab-w-02   Ready    worker   12d', null]] },
+	];
+
+	const el = document.getElementById('fo-terminal');
+	if (el) {
+		const totals = lines.map((l) => l.segs.reduce((n, s) => n + s[0].length, 0));
+		const grand = totals.reduce((a, b) => a + b, 0);
+
+		const escape = (s: string) =>
+			s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+		const render = (chars: number) => {
+			let remaining = chars;
+			let html = '';
+			for (let i = 0; i < lines.length && remaining > 0; i++) {
+				const line = lines[i];
+				if (!line) break;
+				let row = '';
+				for (const [text, tone] of line.segs) {
+					if (remaining <= 0) break;
+					const take = escape(text.slice(0, remaining));
+					remaining -= text.length;
+					row += tone ? `<span class="${tone}">${take}</span>` : take;
+				}
+				html += `<div>${row}</div>`;
+			}
+			html += '<span class="terminal-cursor"></span>';
+			el.innerHTML = html;
+		};
+
+		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		if (reduce) {
+			render(grand);
+		} else {
+			let termChars = 0;
+			const tick = () => {
+				if (termChars >= grand) {
+					window.setTimeout(() => {
+						termChars = 0;
+						render(0);
+						window.setTimeout(tick, 400);
+					}, 3200);
+					return;
+				}
+				let acc = 0;
+				let idx = 0;
+				for (; idx < lines.length; idx++) {
+					const total = totals[idx];
+					if (total === undefined) return;
+					if (termChars < acc + total) break;
+					acc += total;
+				}
+				const line = lines[idx];
+				const total = totals[idx];
+				if (!line || total === undefined) return;
+				let next: number;
+				let delay: number;
+				if (line.typed) {
+					next = termChars + 1;
+					delay = 28 + Math.random() * 45;
+				} else {
+					next = acc + total;
+					delay = 30;
+				}
+				const finishing = next >= acc + total;
+				termChars = next;
+				render(termChars);
+				window.setTimeout(tick, finishing ? line.pauseAfter || 200 : delay);
+			};
+			render(0);
+			window.setTimeout(tick, 600);
+		}
+	}
+</script>

@@ -1,0 +1,21 @@
+---
+interface Props {
+	size?: 30 | 32;
+}
+
+const { size = 32 } = Astro.props;
+const sizeCls = size === 32 ? 'h-8 w-8 text-sm' : 'h-[30px] w-[30px] text-[13px]';
+---
+
+<button
+	id="theme-toggle"
+	type="button"
+	title="Toggle theme"
+	aria-label="Toggle color theme"
+	class:list={[
+		'flex cursor-pointer items-center justify-center rounded-md border border-border bg-transparent leading-none text-muted transition-colors hover:border-text hover:text-text',
+		sizeCls,
+	]}
+>
+	◐
+</button>

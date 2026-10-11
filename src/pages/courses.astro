@@ -1,0 +1,67 @@
+---
+import Layout from '../layouts/Layout.astro';
+import MainNav from '../components/MainNav.astro';
+import CourseCard from '../components/CourseCard.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { courses } from '../data/courses';
+
+const filters = [
+	{ label: 'All tracks', active: true },
+	{ label: 'Foundations', active: false },
+	{ label: 'Platform', active: false },
+	{ label: 'Delivery', active: false },
+	{ label: 'Reliability', active: false },
+];
+
+---
+
+<Layout title="Courses — FlameOps">
+	<div class="min-h-screen bg-bg text-text">
+		<MainNav active="courses" />
+
+		<!-- Page header -->
+		<section class="border-b border-border">
+			<div class="mx-auto max-w-site px-6 pt-16 pb-14 md:px-8">
+				<div class="mb-3 font-mono text-[11px] uppercase tracking-[0.14em] text-accent">Course catalog</div>
+				<h1 class="m-0 mb-3.5 font-display text-[42px] font-semibold tracking-[-0.02em]">Courses</h1>
+				<p class="m-0 max-w-[560px] text-base leading-[1.6] text-muted">
+					Six tracks covering the modern infrastructure stack. Each course is a
+					structured, documentation-first path with recordings, notes, and labs.
+				</p>
+				<div class="mt-7 flex flex-wrap gap-2.5">
+					{
+						filters.map((f) => (
+							<button
+								type="button"
+								aria-pressed={f.active}
+								class:list={[
+									'cursor-pointer rounded-full border px-3.5 py-1.5 font-mono text-xs transition-colors',
+									f.active
+										? 'border-accent bg-accent/[0.07] text-accent'
+										: 'border-border text-muted',
+								]}
+							>
+								{f.label}
+							</button>
+						))
+					}
+				</div>
+			</div>
+		</section>
+
+		<!-- Course grid -->
+		<section>
+			<div class="mx-auto max-w-site px-6 pt-14 pb-[88px] md:px-8">
+				<div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+					{
+						courses.map((c) => (
+							<CourseCard course={c} href="/course" />
+						))
+					}
+				</div>
+			</div>
+		</section>
+
+		<SiteFooter />
+	</div>
+</Layout>

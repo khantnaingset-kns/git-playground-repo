@@ -1,0 +1,17 @@
+---
+import Logo from './Logo.astro';
+---
+
+<footer class="border-t border-border">
+	<div class="mx-auto flex max-w-site flex-wrap items-center justify-between gap-4 px-5 py-8 md:px-8 md:py-10">
+		<div class="flex items-center gap-2.5">
+			<Logo href={null} size={20} withWordmark={false} />
+			<span class="font-mono text-xs text-muted">© 2026 FlameOps. Keep the fire small and controlled.</span>
+		</div>
+		<nav aria-label="Footer" class="flex gap-[22px] text-[13px]">
+			<a href="/courses" class="text-muted hover:text-text">Courses</a>
+			<a href="/#services" class="text-muted hover:text-text">Services</a>
+			<a href="/login" class="text-muted hover:text-text">Log in</a>
+		</nav>
+	</div>
+</footer>

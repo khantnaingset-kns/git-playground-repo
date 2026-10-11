@@ -1,0 +1,75 @@
+---
+import type { Course, CourseLevel } from '../data/courses';
+
+interface Props {
+	course: Course;
+	href: string;
+	variant?: 'catalog' | 'home';
+}
+
+const { course, href, variant = 'catalog' } = Astro.props;
+
+const levelClasses = {
+	Foundation: 'bg-level-foundation',
+	Intermediate: 'bg-level-intermediate',
+	Advanced: 'bg-level-advanced',
+} satisfies Record<CourseLevel, string>;
+---
+
+<article
+	class:list={[
+		'flex flex-col gap-4 rounded-card border border-border bg-surface shadow-card transition-colors hover:border-accent',
+		variant === 'home' ? 'p-5 md:gap-5 md:p-8' : 'p-7',
+	]}
+>
+	<div class="flex items-center justify-between">
+		<span class:list={['font-mono text-[11px] uppercase tracking-[0.12em] text-accent', variant === 'home' && 'md:text-xs']}>
+			{course.track}
+		</span>
+		<span class:list={['font-mono text-[11px] text-muted', variant === 'home' && 'md:text-xs']}>{course.code}</span>
+	</div>
+	<div>
+		<h3
+			class:list={[
+				'mb-2 font-display font-semibold leading-[1.2]',
+				variant === 'home' ? 'text-[19px] md:text-2xl' : 'text-[22px]',
+			]}
+		>
+			{course.title}
+		</h3>
+		<p
+			class:list={[
+				'm-0 leading-[1.6] text-muted',
+				variant === 'home' ? 'text-sm md:text-base' : 'text-sm',
+			]}
+		>
+			{course.desc}
+		</p>
+	</div>
+	<div
+		class:list={[
+			'mt-auto flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border pt-4',
+			variant === 'home' && 'md:pt-5',
+		]}
+	>
+		<div class:list={['flex flex-wrap items-center gap-x-3.5 gap-y-1 font-mono text-[11px] text-muted', variant === 'home' && 'md:text-xs']}>
+			<span class="inline-flex items-center gap-1.5">
+				<span class:list={['inline-block h-[7px] w-[7px] rounded-full', levelClasses[course.level]]}></span>
+				{course.level}
+			</span>
+			<span>·</span>
+			<span>{course.duration}</span>
+			<span>·</span>
+			<span>{course.lessons}</span>
+		</div>
+		<a
+			href={href}
+			class:list={[
+				'inline-flex items-center gap-1.5 text-[13px] font-medium text-accent hover:text-accent-2',
+				variant === 'home' && 'md:text-sm',
+			]}
+		>
+			Open course <span class="font-mono">→</span>
+		</a>
+	</div>
+</article>

@@ -1,0 +1,25 @@
+---
+interface NavItem {
+	label: string;
+	title: string;
+	href: string;
+}
+
+interface Props {
+	previous: NavItem;
+	next: NavItem;
+}
+
+const { previous, next } = Astro.props;
+---
+
+<nav aria-label="Course navigation" class="grid grid-cols-1 gap-3.5 border-t border-border pt-7 sm:grid-cols-2">
+	<a href={previous.href} class="rounded-card border border-border px-5 py-4 text-text shadow-card transition-colors hover:border-accent">
+		<span class="mb-1 block font-mono text-[11px] text-muted">{previous.label}</span>
+		<span class="block text-sm font-medium">{previous.title}</span>
+	</a>
+	<a href={next.href} class="rounded-card border border-border px-5 py-4 text-right text-text shadow-card transition-colors hover:border-accent">
+		<span class="mb-1 block font-mono text-[11px] text-muted">{next.label}</span>
+		<span class="block text-sm font-medium">{next.title}</span>
+	</a>
+</nav>
