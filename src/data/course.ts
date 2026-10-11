@@ -1,6 +1,6 @@
 import type { CourseLevel } from './courses';
 
-export type LessonState = 'done' | 'active' | 'in-progress' | 'expired';
+export type LessonState = 'done' | 'active' | 'in-progress';
 
 export interface Lesson {
 	title: string;
