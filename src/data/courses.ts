@@ -1,4 +1,4 @@
-export type CourseLevel = 'Foundation' | 'Intermediate' | 'Advanced';
+export type CourseLevel = 'Foundation' | 'Intermediate' | 'Advanced' | 'Expert' | 'Mastery';
 
 export interface Course {
 	track: string;

@@ -33,6 +33,8 @@ packages/integrations/**/.netlify/
 # exclude IntelliJ/WebStorm stuff
 .idea
 
+# exclude env
+*.env
 
 # make it easy for people to add project-specific Astro settings that they don't
 # want to share with others (see
